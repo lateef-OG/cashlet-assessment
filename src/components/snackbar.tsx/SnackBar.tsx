@@ -1,11 +1,11 @@
 import { colors } from '@/theme/colors';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text } from 'react-native';
 import Close from '@/assets/icons/Close.svg';
 
 type SnackbarOptions = {
   text: string;
-  secondaryText?: string;
+  action?: () => unknown;
   duration?: number;
 };
 
@@ -33,7 +33,7 @@ export const Snackbar = {
 
 export const SnackbarProvider = () => {
   const [translateY] = useState(() => new Animated.Value(-120));
-
+  const hideTimeout = useRef<number | null>(null);
   const [options, setOptions] = useState<SnackbarOptions | null>(null);
 
   const hide = useCallback(() => {
@@ -46,6 +46,10 @@ export const SnackbarProvider = () => {
 
   const show = useCallback(
     (opts: any) => {
+      if (hideTimeout.current !== null) {
+        clearTimeout(hideTimeout.current);
+        hideTimeout.current = null;
+      }
       setOptions(opts);
 
       Animated.timing(translateY, {
@@ -54,7 +58,9 @@ export const SnackbarProvider = () => {
         useNativeDriver: true,
       }).start();
 
-      setTimeout(hide, opts.duration || Snackbar.LENGTH);
+      hideTimeout.current = setTimeout(() => {
+        hide();
+      }, opts.duration ?? Snackbar.LENGTH);
     },
     [hide, translateY],
   );
@@ -71,11 +77,12 @@ export const SnackbarProvider = () => {
     >
       <Pressable
         style={styles.snackbarTextContainer}
-        onPress={() =>
-          setOptions(prev =>
-            prev ? { ...prev, text: prev?.secondaryText || '' } : prev,
-          )
-        }
+        onPress={() => {
+          const newText = options?.action?.();
+          if (newText && typeof newText === 'string') {
+            setOptions(prev => ({ ...prev, text: newText }));
+          }
+        }}
       >
         <Text style={styles.snackbarText}>{options.text}</Text>
       </Pressable>

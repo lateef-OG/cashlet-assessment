@@ -10,13 +10,13 @@ export const Goals = () => {
 
   const data = [
     { name: 'Goal 1', amount: 'KES 12,000' },
-    { name: 'Goal 2', amount: 'KES 12,000' },
+    { name: 'Goal 2', amount: 'KES 13,000' },
   ];
 
   const showSnackbar = () => {
     Snackbar.show({
       text: 'This is an in-app notification snackbar to show the user when they perform an action. Clicking it should change the text.',
-      secondaryText: 'User click snackbar',
+      action: () => 'User click snackbar',
     });
   };
 

@@ -1,7 +1,7 @@
-import { View } from 'react-native';
-import { styles } from './Home.styles';
+import { StyleSheet, View } from 'react-native';
 import { HomeHeader } from '../components/HomeHeader';
 import { Goals } from '../components/Goals';
+import { colors } from '@/theme/colors';
 
 export const HomeScreen = () => {
   return (
@@ -11,3 +11,10 @@ export const HomeScreen = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: colors.primaryBlue,
+    flex: 1,
+  },
+});
